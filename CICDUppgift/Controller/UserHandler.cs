@@ -10,7 +10,7 @@ namespace CICDUppgift.Controller
 {
     public static class UserHandler
     {
-       public static string userPath = "..//..//..//..//CICDUppgift//Users.txt";
+        public static string userPath = "..//..//..//..//CICDUppgift//Users.txt";
 
 
         public static int LoginUser(string username, string password)
@@ -19,12 +19,12 @@ namespace CICDUppgift.Controller
             List<User> Users = GetUsers();
 
             foreach (var user in Users)
-            {             
+            {
 
                 if (user.userName == username && user.password == password)
-                {                    
+                {
                     Console.WriteLine("Success!");
-                    
+
                     return user.ID;
                 }
             }
@@ -52,8 +52,8 @@ namespace CICDUppgift.Controller
 
         public static List<User> GetUsers()
         {
-            List < User > userUsers = new List<User>();
             List<string> Users = File.ReadAllLines(userPath).ToList();
+            List<User> userUsers = new List<User>();
             foreach (var item in Users)
             {
                 string[] user = item.Split(':');
@@ -71,39 +71,56 @@ namespace CICDUppgift.Controller
 
                 userUsers.Add(currentUser);
             }
-
             return userUsers;
         }
+
         public static User GetUser(int ID)
         {
             List<User> users = GetUsers();
 
             foreach (var user in users)
             {
-                if(user.ID == ID)
+                if (user.ID == ID)
                 {
                     return user;
                 }
             }
             return null;
-
         }
 
-        public static void AddNewUser(string userName, string password, string role, int salary, int balance) { 
-          
-            string user = newID() + ":" + userName + ":" + password + ":" + role + ":" + salary + ":" + balance;
-            StreamWriter sw = new StreamWriter("../../../Users.txt", true);
+        public static void AddNewUser(string userName, string password, string role, int salary, int balance, string accountType)
+        {
+            StreamWriter sw = new StreamWriter(userPath, true);
+            string user = newID() + ":" + userName + ":" + password + ":" + role + ":" + salary + ":" + balance + ":" + accountType;
+
             sw.WriteLine(user);
             sw.Close();
         }
 
-        public static int newID() {
+        public static void listOfUser(List<User> users)
+        {
 
-            List<string> Users = File.ReadAllLines(userPath).ToList();     
+            StreamWriter sw = new StreamWriter(userPath, true);
+
+            foreach (var item in users)
+            {
+                string user = newID() + ":" + item.userName + ":" + item.password + ":" + item.role + ":" + item.salary + ":" + item.balance + ":" + item.accountType;
+
+                sw.WriteLine(user);
+
+            }
+            sw.Close();
+
+        }
+
+        public static int newID()
+        {
+            List<string> Users = Users = File.ReadAllLines(userPath).ToList();
             var lastID = Users.Last().Substring(0, 1);
             int ID = Convert.ToInt32(lastID);
-            return ID + 1;           
 
+            return ID + 1;
+            
         }
 
         public static int getDigitInput()
@@ -113,8 +130,8 @@ namespace CICDUppgift.Controller
             bool parsed = false;
             do
             {
-               parsed = Int32.TryParse(Console.ReadLine(), out userInput);
-               
+                parsed = Int32.TryParse(Console.ReadLine(), out userInput);
+
                 if (!parsed)
                 {
                     Console.WriteLine("Incorrect input");
@@ -133,8 +150,8 @@ namespace CICDUppgift.Controller
             bool result = false;
             do
             {
-             userInput = Console.ReadLine();
-             result = userInput.All(Char.IsLetter);
+                userInput = Console.ReadLine();
+                result = userInput.All(Char.IsLetter);
                 if (!result)
                 {
                     Console.WriteLine("Incorrect Input!");
