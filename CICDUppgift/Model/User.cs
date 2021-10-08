@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CICDUppgift.Model
 {
-    class User : Account
+    public class User : Account
     {
         public int salary { get; set; }
 
