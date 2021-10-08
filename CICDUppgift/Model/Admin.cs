@@ -11,4 +11,11 @@ namespace CICDUppgift.Model
         public bool adminAccess { get; set; }
 
     }
+
+
+
+
+
+
+
 }
