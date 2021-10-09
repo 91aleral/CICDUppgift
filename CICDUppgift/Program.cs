@@ -12,16 +12,9 @@ namespace CICDUppgift
     {
         static void Main(string[] args)
         {
-            List<User> users;
-            using (StreamReader reader = new StreamReader(UserHandler.userPath))
-            {
-                users = UserHandler.GetUsers();
-                reader.Close();
-            }
 
-            UserHandler.listOfUser(users);
-
-
+            //UserHandler.Login();
+            UserHandler.DeleteUser();
 
 
 
@@ -59,7 +52,6 @@ namespace CICDUppgift
 
             //return userInput;
 
-            Console.Read();
 
             //StreamReader reader = new StreamReader(userPath);
 
@@ -93,6 +85,7 @@ namespace CICDUppgift
 
 
 
+        
         }
     }
 }
