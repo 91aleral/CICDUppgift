@@ -98,26 +98,45 @@ namespace CICDUppgift.Controller
         }
 
         public static void listOfUser(List<User> users)
-        {
-
-            StreamWriter sw = new StreamWriter(userPath, true);
+        {            
 
             foreach (var item in users)
             {
-                string user = newID() + ":" + item.userName + ":" + item.password + ":" + item.role + ":" + item.salary + ":" + item.balance + ":" + item.accountType;
+                using (StreamWriter sw = new StreamWriter(userPath, true))
+                {
+                    string user = newID() + ":" + item.userName + ":" + item.password + ":" + item.role + ":" + item.salary + ":" + item.balance + ":" + item.accountType;
 
                 sw.WriteLine(user);
+                sw.Close();
 
             }
-            sw.Close();
+            }
 
         }
 
         public static int newID()
         {
-            List<string> Users = Users = File.ReadAllLines(userPath).ToList();
-            var lastID = Users.Last().Substring(0, 1);
-            int ID = Convert.ToInt32(lastID);
+            // List<string> Users = Users = File.ReadAllLines(userPath).ToList();
+
+            List<string> Users = new List<string>();
+            using (var stream = new FileStream(userPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        Users.Add(line);
+                    }
+                }
+            }
+
+
+
+
+            var lastID = Users.Last().Split(':');
+            //Substring(0, 1);
+            int ID = Convert.ToInt32(lastID[0]);
 
             return ID + 1;
             
