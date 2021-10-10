@@ -7,6 +7,8 @@
     using System.Text;
     using System.Threading.Tasks;
     using System.IO;
+    using System.Threading;
+    using CICDUppgift.View;
 
     public static class UserHandler
     {
@@ -14,7 +16,7 @@
         public static string RemovedUserPath = "..//..//..//..//CICDUppgift//RemovedUsers.txt";
 
 
-        public static int LoginUser(string username, string password)
+        public static User LoginUser(string username, string password)
         {
             List<User> Users = GetUsers();
 
@@ -23,27 +25,37 @@
 
                 if (user.userName == username && user.password == password)
                 {
+                    Console.Clear();
                     if (user.accountType == "User")
                     {
+                        
                         Console.WriteLine($"User {username} logged in");
+                        Thread.Sleep(2000);
+                        Menu.MainMenu(user);
+
+                        
                     }
 
                     else if (user.accountType == "Admin")
                     {
+                        
                         Console.WriteLine($"Admin {username} logged in");
+                        Thread.Sleep(2000);
+                        Menu.MainMenu(user);
                     }
 
-                    return user.ID;
+                    return user;
                 }
             }
             Console.WriteLine("Fail");
-            return 0;
+            Console.Clear();
+            return null;
         }
 
 
-        public static User Login()
+        public static void Login()
         {
-            int userID;
+            User user;
             do
             {
                 Console.WriteLine("Enter username:");
@@ -51,10 +63,10 @@
                 Console.WriteLine("Enter password:");
                 var password = Console.ReadLine();
 
-                userID = LoginUser(username, password);
-            } while (userID == 0);
+                user = LoginUser(username, password);
+            } while (user == null);
 
-            return GetUser(userID);
+           
 
         }
 
@@ -97,58 +109,33 @@
         }
 
         // Fungerar inte. Skriver över ALLT i txt filen..
-        public static void DeleteUser()
+        public static void DeleteUser(User user)
         {
             // Hämtar users
             List<User> users = GetUsers();
 
             // temp fil av userPath
-            string tempFile = Path.GetTempFileName();
-            
+
             // User input
             Console.WriteLine("Enter your username: ");
-            var usernameDelete = Console.ReadLine();
+            var username = Console.ReadLine();
 
             // User input
             Console.WriteLine("Enter your password: ");
-            var userPasswordDelete = Console.ReadLine();
+            var password = Console.ReadLine();
 
-            // Går igenom users lista
-            foreach (var user in users)
+            if (username == user.userName && password == user.password)
             {
-                // Om username == user input && userpassword == user input
-                if (user.userName == usernameDelete && user.password == userPasswordDelete)
-                {
-
-                    // Läs nuvarande userPath
-                    using (var sr = new StreamReader(userPath))
-                        // Temporär fil som skriver över userPath
-                    using (var sw = new StreamWriter(tempFile))
-                    {
-                        // Medans user input = Avläsning i userPath och det inte är = null, fortsätt
-                        while ((usernameDelete = sr.ReadLine()) != null)
-                        {
-                            // Om user input inte är = username
-                            if (usernameDelete != user.userName)
-                            {
-                                // Blir user input = username
-                                // Skriv över med tom sträng.
-                                sw.WriteLine("");
-
-                            }
-
-                        }
-                        // Stäng usings
-                        sw.Close();
-                        sr.Close();
-                    }
-
-                    // Radera nuvarande userPath
-                    File.Delete(userPath);
-                    // Skriv över userPath med temp filen.
-                    File.Move(tempFile, userPath);
-                }
+                users.RemoveAll(u => u.userName == username && u.password == password);
+                UserHandler.OverwritelistOfUser(users);
             }
+            else
+            {
+                Console.WriteLine("Incorrect username or password");
+            }
+            
+
+
         }
 
         public static void AddNewUser(string userName, string password, string role, int salary, int balance, string accountType)
@@ -160,21 +147,59 @@
             sw.Close();
         }
 
+        /// <summary>
+        /// Skriver användare till txt
+        /// </summary>
+        /// <param name="users"></param>
         public static void listOfUser(List<User> users)
-        {            
+        {
 
-            StreamWriter sw = new StreamWriter(userPath, true);
 
             foreach (var item in users)
             {
-                string user = newID() + ":" + item.userName + ":" + item.password + ":" + item.role + ":" + item.salary + ":" + item.balance + ":" + item.accountType;
+                using (StreamWriter sw = new StreamWriter(userPath, true))
+                {
+                    string user = newID() + ":" + item.userName + ":" + item.password + ":" + item.role + ":" + item.salary + ":" + item.balance + ":" + item.accountType;
 
-                sw.WriteLine(user);
+                    sw.WriteLine(user);
+                    sw.Close();
+                };
 
             }
-            sw.Close();
 
-        //}
+        }
+
+        public static void OverwritelistOfUser(List<User> users)
+        {
+            newTxtList();
+            users.RemoveAt(0);
+            foreach (var item in users)
+            {
+                using (StreamWriter sw = new StreamWriter(userPath, true))
+                {
+                    string user = newID() + ":" + item.userName + ":" + item.password + ":" + item.role + ":" + item.salary + ":" + item.balance + ":" + item.accountType;
+
+                    sw.WriteLine(user);
+                    sw.Close();
+                };
+
+            }
+
+        }
+
+        public static void newTxtList()
+        {
+
+            using (StreamWriter sw = new StreamWriter(userPath, false))
+            {
+                string user = 1 + ":" + "Admin" + ":" + "admin123" + ":" + "User" + ":" + 0 + ":" + 0 + ":" + "Admin";
+                sw.WriteLine(user);
+                sw.Close();
+            }
+
+
+
+        }
 
         public static int newID()
         {
@@ -197,7 +222,6 @@
 
 
             var lastID = Users.Last().Split(':');
-            //Substring(0, 1);
             int ID = Convert.ToInt32(lastID[0]);
 
             return ID + 1;
