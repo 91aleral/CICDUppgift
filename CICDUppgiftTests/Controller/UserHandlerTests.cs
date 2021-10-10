@@ -73,18 +73,18 @@ namespace CICDUppgift.Controller.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod()]
-        public void AddNewUserTest_1()
-        {
-            UserHandler.AddNewUser("test", "test123", "Test", 15, 250, "User");
-            var list = UserHandler.GetUsers();
-            var expected = list.Last().userName;
-            var actual = "test";
+        //[TestMethod()]
+        //public void AddNewUserTest_1()
+        //{
+        //    UserHandler.AddNewUser("test", "test123", "Test", 15, 250, "User");
+        //    var list = UserHandler.GetUsers();
+        //    var expected = list.Last().userName;
+        //    var actual = "test";
 
-            list.RemoveAt(list.Count - 1);
-            UserHandler.listOfUser(list);
-            Assert.AreEqual(expected, actual);
+        //    list.RemoveAt(list.Count - 1);
+        //    UserHandler.listOfUser(list);
+        //    Assert.AreEqual(expected, actual);
 
-        }
+        //}
     }
 }

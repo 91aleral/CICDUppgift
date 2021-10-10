@@ -1,0 +1,7 @@
+1:Admin:admin123:User:0:0:Admin
+2:Dogge:Tjena1:User:200:3000:User
+3:Lena:Hejsan1:User:100:1000:User
+4:Per:Halloj1:User:500:5000:User
+5:Karl:Hello1:User:600:6000:User
+6:Peter:Hey91:User:200:2000:User
+7:Alex:Hej1:User:400:2000:User
