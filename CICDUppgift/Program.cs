@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using CICDUppgift.Controller;
 using System.Threading;
+using CICDUppgift.View;
 
 namespace CICDUppgift
 {
@@ -12,38 +13,12 @@ namespace CICDUppgift
     {
         static void Main(string[] args)
         {
-
-            Console.Read();
-
-
-
-            //List<User> users = UserHandler.GetUsers();
-            //string username = "Lena";
-            //string password = "Hejsan1";
-
-
-            //users.RemoveAll(u => u.userName == username && u.password == password);
-            //UserHandler.OverwritelistOfUser(users);
-
-            //UserHandler.listOfUser(users);
-            Console.Read();
-            //UserHandler.Login();
-            //UserHandler.DeleteUser();
-
-
-
-
-            
+            Menu.Login();
 
 
 
 
 
-
-
-
-
-        
         }
     }
 }

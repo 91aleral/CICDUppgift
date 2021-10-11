@@ -14,7 +14,7 @@
     {
         public static string userPath = "..//..//..//..//CICDUppgift//Users.txt";
         public static string RemovedUserPath = "..//..//..//..//CICDUppgift//RemovedUsers.txt";
-
+        public static string AdminLog = "..//..//..//..//CICDUppgift//AdminLog.txt";
 
         public static User LoginUser(string username, string password)
         {
@@ -33,7 +33,15 @@
         }
 
 
+        public static void ChangeRequest(string userName, string userRole, string typeOfChange, string currentValue, string newValue)
+        {
+            string request = userName + ":" + userRole + ":" + typeOfChange + ":" + currentValue + ":" + newValue;
 
+            using (StreamWriter sw = new StreamWriter(AdminLog, true))
+            {
+                sw.WriteLine(request);
+            }
+        }
 
 
         public static List<User> GetUsers()
