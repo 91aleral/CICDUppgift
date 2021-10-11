@@ -166,7 +166,7 @@
 
             using (StreamWriter sw = new StreamWriter(userPath, false))
             {
-                string user = 1 + ":" + "Admin" + ":" + "admin123" + ":" + "User" + ":" + 0 + ":" + 0 + ":" + "Admin";
+                string user = 1 + ":" + "admin1" + ":" + "admin1234" + ":" + "Admin" + ":" + 0 + ":" + 0 + ":" + "Admin";
                 sw.WriteLine(user);
                 sw.Close();
             }
@@ -259,6 +259,96 @@
             while (!result);
 
             return userInput;
+        }
+
+        public static List<UserRequest> GetAdminLog()
+        {
+            List<string> requests = new List<string>();
+
+            using (var stream = new FileStream(AdminLog, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        requests.Add(line);
+                    }
+                }
+            }
+
+            List<UserRequest> userRequests= new List<UserRequest>();
+            foreach (var item in requests)
+            {
+                string[] currentChange = item.Split(':');
+
+                UserRequest currentRequest = new UserRequest
+                {
+                    userName = currentChange[0],
+                    role = currentChange[1],
+                    change = currentChange[2],
+                    currentValue = currentChange[3],
+                    newValue = currentChange[4]
+                };
+
+                userRequests.Add(currentRequest);
+            }
+            return userRequests;
+
+        }
+
+        public static void executeRequest(UserRequest request)
+        {
+            var users = GetUsers();
+
+
+            foreach (var user in users.Where(u => u.userName == request.userName))
+            {
+                if(request.change == "role" || request.change == "Role")
+                {
+                    user.role = request.newValue;
+                }
+                else if (request.change == "Salary" || request.change == "salary")
+                {
+                    user.salary = Convert.ToInt32(request.newValue);
+                }
+            }
+
+            OverwritelistOfUser(users);
+
+        }
+
+        public static void OverwriteRequests(List<UserRequest> requests)
+        {
+            newTxtAdmin();
+            requests.RemoveAt(0);
+            foreach (var item in requests)
+            {
+                using (StreamWriter sw = new StreamWriter(AdminLog, true))
+                {
+                    string request = item.userName + ":" + item.role + ":" + item.change + ":" + item.currentValue + ":" + item.newValue;
+                    
+                    sw.WriteLine(request);
+                    sw.Close();
+                   
+                };
+
+            }
+
+        }
+
+        public static void newTxtAdmin()
+        {
+
+            using (StreamWriter sw = new StreamWriter(AdminLog, false))
+            {
+                
+                sw.WriteLine("username:role:change:currentValue:newValue");
+                sw.Close();
+            }
+
+
+
         }
     }
 }

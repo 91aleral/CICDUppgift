@@ -1,1 +1,1 @@
-Ursula:Cleaner:salary:50:500
+username:role:change:currentValue:newValue
