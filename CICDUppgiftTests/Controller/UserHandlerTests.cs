@@ -21,7 +21,7 @@ namespace CICDUppgift.Controller.Tests
             {
                 line = sr.ReadLine();
             }
-            var expected = line.Contains("Admin");
+            var expected = line.Contains("admin1");
             var actual = true;
             Assert.AreEqual(expected, actual);
         }
@@ -29,7 +29,7 @@ namespace CICDUppgift.Controller.Tests
         [TestMethod()]
         public void LoginUserTest_1()
         {
-            var actual = UserHandler.LoginUser("Admin", "admin123").ID;
+            var actual = UserHandler.LoginUser("admin1", "admin1234").ID;
             var expected = 1;
             Assert.AreEqual(expected, actual);
         }
@@ -65,7 +65,7 @@ namespace CICDUppgift.Controller.Tests
         {
             var actual = UserHandler.GetUsers()[0].userName;
 
-            Assert.AreEqual("Admin", actual);
+            Assert.AreEqual("admin1", actual);
         }
 
         [TestMethod()]

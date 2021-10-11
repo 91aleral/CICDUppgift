@@ -3,4 +3,5 @@
 3:Karl:Hello1:Developer:600:6000:User
 4:Peter:Hey91:Tester:200:2000:User
 5:Alex:Hej1:Manager:9000:35000:User
-6:Dogge:Tjabba123:Toyboy:69:32000:User
+6:Dogge:Tjabba123:CEO:9001:32000:User
+7:Ursula:ImACleaner:Cleaner:50:249:User
