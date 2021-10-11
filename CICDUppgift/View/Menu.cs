@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace CICDUppgift.View
 {
-    class Menu
+    public class Menu : UserHandler
     {
 
 
@@ -68,6 +68,25 @@ namespace CICDUppgift.View
 
         }
 
+      
+
+        public static void Login()
+        {
+            User user;
+            do
+            {
+                Console.WriteLine("Enter username:");
+                var username = Console.ReadLine();
+                Console.WriteLine("Enter password:");
+                var password = Console.ReadLine();
+
+                user = LoginUser(username, password);
+            } while (user == null);
+
+
+
+        }
+
         public static void AddUser(User user)
         {
             Console.WriteLine("Logged in as {0}, role: {1}\n\n", user.userName, user.role);
@@ -118,6 +137,29 @@ namespace CICDUppgift.View
             Console.WriteLine("\n\n Press any key to return to menu");
             Console.ReadKey();
             MainMenu(user);
+        }
+
+        public static void DeleteSelectedUser(User user)
+        {
+            // Hämtar users
+            List<User> users = UserHandler.GetUsers();
+
+            // User input
+            Console.WriteLine("Enter your username: ");
+            var username = Console.ReadLine();
+
+            // User input
+            Console.WriteLine("Enter your password: ");
+            var password = Console.ReadLine();
+
+            if (username == user.userName && password == user.password)
+            {
+                UserHandler.DeleteUser(username, password);
+            }
+            else
+            {
+                Console.WriteLine("Incorrect username or password");
+            }
         }
     }
 }

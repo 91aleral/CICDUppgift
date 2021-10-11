@@ -3,5 +3,3 @@
 3:Karl:Hello1:User:600:6000:User
 4:Peter:Hey91:User:200:2000:User
 5:Alex:Hej1:User:400:2000:User
-6:Adolf:Hej2343:User:9000:888888:User
-7:Penis:Penis1:User:9999:87654321:User

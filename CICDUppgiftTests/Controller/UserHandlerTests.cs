@@ -15,8 +15,12 @@ namespace CICDUppgift.Controller.Tests
         [TestMethod()]
         public void AccessTxtTest()
         {
-            StreamReader sr = new StreamReader("..//..//..//..//CICDUppgift//Users.txt");
-            var line = sr.ReadLine();
+            string line;
+
+            using (StreamReader sr = new StreamReader("..//..//..//..//CICDUppgift//Users.txt"))
+            {
+                line = sr.ReadLine();
+            }
             var expected = line.Contains("Admin");
             var actual = true;
             Assert.AreEqual(expected, actual);
@@ -25,23 +29,30 @@ namespace CICDUppgift.Controller.Tests
         [TestMethod()]
         public void LoginUserTest_1()
         {
-            var actual = UserHandler.LoginUser("Admin", "admin123");
+            var actual = UserHandler.LoginUser("Admin", "admin123").ID;
             var expected = 1;
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod()]
-        public void LoginUserTest_2()
-        {
-            var actual = UserHandler.LoginUser("hejsan", "duDin");
-            var expected = 0;
-            Assert.AreEqual(expected, actual);
-        }
+
 
         [TestMethod()]
         public void GetUsersTest_1()
         {
-            List<string> Users = File.ReadAllLines(UserHandler.userPath).ToList();
+            List<string> Users = new List<string>();
+
+            using (var stream = new FileStream(UserHandler.userPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        Users.Add(line);
+                    }
+                }
+            }
+
 
             var expected = Users.Count();
             var actual = UserHandler.GetUsers().Count;
@@ -58,33 +69,15 @@ namespace CICDUppgift.Controller.Tests
         }
 
         [TestMethod()]
-        public void GetUsersTest_3()
+        public void AddNewUserAndDeleteTest_1()
         {
-            var actual = UserHandler.GetUsers()[0].password;
+            UserHandler.AddNewUser("test", "test123", "Test", 15, 250, "User");
+            var list = UserHandler.GetUsers();
+            var expected = list.Last().userName;
+            var actual = "test";
 
-            Assert.AreEqual("admin123", actual);
-        }
-
-        [TestMethod()]
-        public void GetUserTest_1()
-        {
-            var actual = UserHandler.GetUser(5).userName;
-            var expected = "Karl";
+            UserHandler.DeleteUser("test", "test123");
             Assert.AreEqual(expected, actual);
         }
-
-        //[TestMethod()]
-        //public void AddNewUserTest_1()
-        //{
-        //    UserHandler.AddNewUser("test", "test123", "Test", 15, 250, "User");
-        //    var list = UserHandler.GetUsers();
-        //    var expected = list.Last().userName;
-        //    var actual = "test";
-
-        //    list.RemoveAt(list.Count - 1);
-        //    UserHandler.listOfUser(list);
-        //    Assert.AreEqual(expected, actual);
-
-        //}
     }
 }

@@ -13,7 +13,6 @@ namespace CICDUppgift
         static void Main(string[] args)
         {
 
-            UserHandler.Login();
             Console.Read();
 
 

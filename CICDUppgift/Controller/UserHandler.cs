@@ -10,7 +10,7 @@
     using System.Threading;
     using CICDUppgift.View;
 
-    public static class UserHandler
+    public class UserHandler
     {
         public static string userPath = "..//..//..//..//CICDUppgift//Users.txt";
         public static string RemovedUserPath = "..//..//..//..//CICDUppgift//RemovedUsers.txt";
@@ -25,54 +25,33 @@
 
                 if (user.userName == username && user.password == password)
                 {
-                    Console.Clear();
-                    if (user.accountType == "User")
-                    {
-                        
-                        Console.WriteLine($"User {username} logged in");
-                        Thread.Sleep(2000);
-                        Menu.MainMenu(user);
-
-                        
-                    }
-
-                    else if (user.accountType == "Admin")
-                    {
-                        
-                        Console.WriteLine($"Admin {username} logged in");
-                        Thread.Sleep(2000);
-                        Menu.MainMenu(user);
-                    }
 
                     return user;
                 }
             }
-            Console.WriteLine("Fail");
-            Console.Clear();
             return null;
         }
 
 
-        public static void Login()
-        {
-            User user;
-            do
-            {
-                Console.WriteLine("Enter username:");
-                var username = Console.ReadLine();
-                Console.WriteLine("Enter password:");
-                var password = Console.ReadLine();
 
-                user = LoginUser(username, password);
-            } while (user == null);
 
-           
-
-        }
 
         public static List<User> GetUsers()
         {
-            List<string> Users = File.ReadAllLines(userPath).ToList();
+            List<string> Users = new List<string>();
+
+            using (var stream = new FileStream(userPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        Users.Add(line);
+                    }
+                }
+            }
+
             List<User> userUsers = new List<User>();
             foreach (var item in Users)
             {
@@ -109,42 +88,29 @@
         }
 
         // Fungerar inte. Skriver över ALLT i txt filen..
-        public static void DeleteUser(User user)
+        public static void DeleteUser(string username, string password)
         {
             // Hämtar users
             List<User> users = GetUsers();
 
-            // temp fil av userPath
+            users.RemoveAll(u => u.userName == username && u.password == password);
+            OverwritelistOfUser(users);
 
-            // User input
-            Console.WriteLine("Enter your username: ");
-            var username = Console.ReadLine();
 
-            // User input
-            Console.WriteLine("Enter your password: ");
-            var password = Console.ReadLine();
-
-            if (username == user.userName && password == user.password)
-            {
-                users.RemoveAll(u => u.userName == username && u.password == password);
-                UserHandler.OverwritelistOfUser(users);
-            }
-            else
-            {
-                Console.WriteLine("Incorrect username or password");
-            }
-            
 
 
         }
 
         public static void AddNewUser(string userName, string password, string role, int salary, int balance, string accountType)
         {
-            StreamWriter sw = new StreamWriter(userPath, true);
-            string user = newID() + ":" + userName + ":" + password + ":" + role + ":" + salary + ":" + balance + ":" + accountType;
 
-            sw.WriteLine(user);
-            sw.Close();
+            string user = newID() + ":" + userName + ":" + password + ":" + role + ":" + salary + ":" + balance + ":" + accountType;
+            
+            using (StreamWriter sw = new StreamWriter(userPath, true))
+            {
+                sw.WriteLine(user);
+                //sw.Close();
+            }
         }
 
         /// <summary>
