@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CICDUppgift.Model;
-using CICDUppgift.Controller;
-using System.Threading;
-
-namespace CICDUppgift.View
+﻿namespace CICDUppgift.View
 {
+    using System;
+    using System.Collections.Generic;
+    using CICDUppgift.Model;
+    using CICDUppgift.Controller;
+    using System.Threading;
+
     public class Menu : UserHandler
     {
         public static void MainMenu(User user)
@@ -37,36 +34,33 @@ namespace CICDUppgift.View
 
                 }
             }
+
             else if (user.accountType == "Admin")
             {
                 Console.WriteLine("Logged in as {0}, role: {1}\n\n", user.userName, user.role);
-                Console.WriteLine("1. Change password");
-                Console.WriteLine("2. Show all current users");
-                Console.WriteLine("3. Show requested userchanges");
-                Console.WriteLine("4. Pay out all salaries");
-                Console.WriteLine("5. Create new user");
-                Console.WriteLine("6. Remove user");
+                Console.WriteLine("1. Show all current users");
+                Console.WriteLine("2. Show requested userchanges");
+                Console.WriteLine("3. Pay out all salaries");
+                Console.WriteLine("4. Create new user");
+                Console.WriteLine("5. Remove user");
 
                 var input = Console.ReadLine();
 
                 switch (input)
                 {
                     case "1":
-                        Console.WriteLine("wwww");
-                        break;
-                    case "2":
                         GetAllUsers(user);
                         break;
-                    case "3":
+                    case "2":
                         showUserRequests(user);
                         break;
-                    case "4":
-                        Console.WriteLine("ww");
+                    case "3":
+                        PayOutRequest(user);
                         break;
-                    case "5":
+                    case "4":
                         AddUser(user);
                         break;
-                    case "6":
+                    case "5":
                         AdminDeleteUser(user);
                         break;
 
@@ -75,22 +69,16 @@ namespace CICDUppgift.View
                         break;
                 }
             }
-
-
-
-
-
         }
 
         public static void RequestChange(User user)
         {
-            //    string userName, string userRole, string typeOfChange, string currentValue, string newValue
             string request;
             bool success;
             do
             {
                 Console.WriteLine("Request change to current role or salary");
-                request = Console.ReadLine();
+                request = Console.ReadLine().ToLower();
                 if (request == "role" || request == "salary")
                 {
                     success = true;
@@ -101,15 +89,15 @@ namespace CICDUppgift.View
                 }
             } while (!success);
 
-            if (request == "role")
+            if (request == "role" || request == "Role")
             {
                 Console.WriteLine("Enter a new role: ");
                 var RequestedRole = Console.ReadLine();
-                Console.WriteLine("Are you sure you want to request to change {0} to {1}?", user.role, RequestedRole);
+                Console.WriteLine("Are you sure you want to request to change from {0} to {1}?", user.role, RequestedRole);
                 Console.WriteLine("Y/N");
                 var input = Console.ReadLine();
 
-                if (input == "Y")
+                if (input == "Y" || input == "y")
                 {
                     ChangeRequest(user.userName, user.role, request, user.role, RequestedRole);
                     Console.WriteLine($"Request added {RequestedRole} from {user.role}\n\n");
@@ -127,16 +115,16 @@ namespace CICDUppgift.View
 
 
             }
-            else if (request == "salary")
+            else if (request == "salary" || request == "Salary")
             {
                 Console.WriteLine("Enter a new salary: ");
                 var RequestedSalary = Console.ReadLine();
 
-                Console.WriteLine("Are you sure you want to request to change {0} to {1}?", user.salary, RequestedSalary);
+                Console.WriteLine("Are you sure you want to request to change from {0} to {1}?", user.salary, RequestedSalary);
                 Console.WriteLine("Y/N");
                 var input = Console.ReadLine();
 
-                if (input == "Y")
+                if (input == "Y" || input == "y")
                 {
                     ChangeRequest(user.userName, user.role, request, user.salary.ToString(), RequestedSalary);
                     Console.WriteLine($"Request added {RequestedSalary} from {user.salary}\n\n");
@@ -179,26 +167,29 @@ namespace CICDUppgift.View
             Console.WriteLine("Logged in as {0}, role: {1}\n\n", user.userName, user.role);
             Console.WriteLine("Add new user:   (username, password, role, salary, balance, accountType");
             Console.WriteLine("Enter a username:");
-            var username = UserHandler.getNumberAndLetterInput();
+            var username = getNumberAndLetterInput();
             Console.WriteLine("Enter a password:");
-            var password = UserHandler.getNumberAndLetterInput();
+            var password = getNumberAndLetterInput();
             Console.WriteLine("Enter a role:");
-            var role = UserHandler.getLetterInput();
+            var role = getLetterInput();
             Console.WriteLine("Enter a salary:");
-            int salary = UserHandler.getDigitInput();
-            Console.WriteLine("Enter a balance:");
-            int balance = UserHandler.getDigitInput();
-            Console.WriteLine("Enter a role:");
-            var accountType = UserHandler.getLetterInput();
+            int salary = getDigitInput(); ;
+            Console.WriteLine("Enter a account type (User/Admin):");
+            var accountType = getLetterInput();
 
+            if (accountType != "User" && accountType != "Admin")
+            {
+                Console.WriteLine("Incorrect data! Returning to menu...");
+                Thread.Sleep(2000);
+                MainMenu(user);
+            }
 
-
-            Console.WriteLine("\n\nCreate user {0}, password: {1}, role: {2}, salary: {3}, balance: {4}, accountType: {5}?", username, password, role, salary, balance, accountType);
+            Console.WriteLine("\n\nCreate user {0}, password: {1}, role: {2}, salary: {3}, accountType: {5}?", username, password, role, salary, accountType);
             Console.WriteLine("Y/N");
             var input = Console.ReadLine();
-            if (input == "Y")
+            if (input == "Y" || input == "y")
             {
-                UserHandler.AddNewUser(username, password, role, salary, balance, accountType);
+                AddNewUser(username, password, role, salary, 0, accountType);
                 MainMenu(user);
             }
             else
@@ -206,7 +197,6 @@ namespace CICDUppgift.View
                 Console.WriteLine("Cancelled.");
                 Thread.Sleep(2000);
                 MainMenu(user);
-
             }
         }
 
@@ -214,7 +204,7 @@ namespace CICDUppgift.View
         {
             Console.Clear();
             Console.WriteLine("Logged in as {0}, role: {1}\n\n", user.userName, user.role);
-            var userList = UserHandler.GetUsers();
+            var userList = GetUsers();
 
             foreach (var item in userList)
             {
@@ -229,7 +219,7 @@ namespace CICDUppgift.View
         public static void DeleteCurrentUser(User user)
         {
             // Hämtar users
-            List<User> users = UserHandler.GetUsers();
+            List<User> users = GetUsers();
             Console.WriteLine("Remove current user... \n\n");
             // User input
             Console.WriteLine("Enter your username: ");
@@ -247,49 +237,45 @@ namespace CICDUppgift.View
                 var input = Console.ReadLine();
                 if (input == "Y" || input == "y")
                 {
-                    UserHandler.DeleteUser(username, password);
+                    DeleteUser(username, password);
                     Login();
                 }
                 else
                 {
                     MainMenu(user);
                 }
-
-
             }
             else
             {
                 Console.WriteLine("Incorrect username or password");
                 MainMenu(user);
-            }      
-
+            }
         }
 
         public static void AdminDeleteUser(User user)
         {
             Console.Clear();
             // Hämtar users
-            List<User> users = UserHandler.GetUsers();
+            List<User> users = GetUsers();
             Console.WriteLine("Users: \n\n");
             foreach (var item in users)
             {
                 Console.WriteLine($"Username:{item.userName}  Password:{item.password}  Role:{item.role}");
             }
-            
+
             Console.WriteLine("\nEnter a username to remove:");
             var username = Console.ReadLine();
-            
+
             Console.WriteLine("Enter the user's password:");
             var password = Console.ReadLine();
 
-
-            if(users.Exists(u => u.userName == username && u.password == password))
+            if (users.Exists(u => u.userName == username && u.password == password))
             {
                 Console.WriteLine($"Are you sure you want to remove user {username}?  Y/N");
                 var input = Console.ReadLine();
                 if (input == "Y" || input == "y")
                 {
-                    UserHandler.DeleteUser(username, password);
+                    DeleteUser(username, password);
                     Console.WriteLine($"User {username} has been removed!");
                     Console.WriteLine("Returning to menu..");
                     Thread.Sleep(2500);
@@ -299,7 +285,6 @@ namespace CICDUppgift.View
                 {
                     MainMenu(user);
                 }
-
             }
             else
             {
@@ -307,10 +292,8 @@ namespace CICDUppgift.View
                 Console.WriteLine("Press any key to continue..");
                 Console.Read();
                 MainMenu(user);
-            }           
-
+            }
         }
-
 
         public static void showUserRequests(User user)
         {
@@ -322,34 +305,73 @@ namespace CICDUppgift.View
                 Thread.Sleep(2000);
                 MainMenu(user);
             }
-            
+
             Console.WriteLine("Current requests: \n");
-            
+
 
             for (int i = 1; i < requests.Count; i++)
             {
                 Console.WriteLine($" {i}. User {requests[i].userName}, {requests[i].role} requesting updated {requests[i].change} from {requests[i].currentValue} to {requests[i].newValue}");
             }
+            Console.WriteLine("Press 1 to perform changes or 2 to remove a change.");
+            var performance = Console.ReadLine();
+            if (performance == "2")
+            {
+                Console.WriteLine("Enter the number to remove: ");
+                int numberToRemove = getDigitInput();
+                if (numberToRemove >= requests.Count || numberToRemove <= 0)
+                {
+                    Console.WriteLine("Nothing to match...");
+                    Thread.Sleep(2000);
+                    MainMenu(user);
+                }
 
-            Console.WriteLine("\n Enter the number of a request to execute it");
-            int indexToChange = Convert.ToInt32(Console.ReadLine());            
-            if(indexToChange > requests.Count)
+                requests.RemoveAt(numberToRemove);
+                OverwriteRequests(requests);
+                MainMenu(user);
+            }
+            else if ( performance == "1")
+            {
+                Console.WriteLine("\n Enter the number of a request to execute it (e.g 3)!");
+                int indexToChange = getDigitInput();
+
+                if (indexToChange >= requests.Count)
+                {
+                    Console.WriteLine("Incorrect choice! Returning to menu");
+                    Thread.Sleep(2000);
+                    MainMenu(user);
+                }
+                executeRequest(requests[indexToChange]);
+                requests.RemoveAt(indexToChange);
+                OverwriteRequests(requests);
+                MainMenu(user);
+            }
+            else
             {
                 Console.WriteLine("Incorrect choice! Returning to menu");
                 Thread.Sleep(2000);
                 MainMenu(user);
             }
-            executeRequest(requests[indexToChange]);
-            requests.RemoveAt(indexToChange);
-            OverwriteRequests(requests);
-            MainMenu(user);
         }
 
-        public static void SantaClaus()
+        public static void PayOutRequest(User user)
         {
-            var users = GetUsers();
+            Console.WriteLine("Would you like to pay all users? Y/N");
+            var input = Console.ReadLine();
 
-           
+            if (input == "Y" || input == "y")
+            {
+                MonthlyPayOut();
+                Console.WriteLine("Payout has been done!");
+                Thread.Sleep(2000);
+                MainMenu(user);
+            }
+            else
+            {
+                Console.WriteLine("Incorrect choice! Returning to menu...");
+                Thread.Sleep(2000);
+                MainMenu(user);
+            }
         }
     }
 }

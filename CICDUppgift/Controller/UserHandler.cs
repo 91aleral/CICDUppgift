@@ -13,7 +13,6 @@
     public class UserHandler
     {
         public static string userPath = "..//..//..//..//CICDUppgift//Users.txt";
-        public static string RemovedUserPath = "..//..//..//..//CICDUppgift//RemovedUsers.txt";
         public static string AdminLog = "..//..//..//..//CICDUppgift//AdminLog.txt";
 
         public static User LoginUser(string username, string password)
@@ -95,7 +94,6 @@
             return null;
         }
 
-        // Fungerar inte. Skriver över ALLT i txt filen..
         public static void DeleteUser(string username, string password)
         {
             // Hämtar users
@@ -246,17 +244,20 @@
         {
             string userInput;
             bool result = false;
+            bool containsDigit;
+            bool containsLetter;
             do
             {
                 userInput = Console.ReadLine();
                 result = userInput.All(Char.IsLetterOrDigit);
-                if (!result)
+                containsDigit = userInput.Any(Char.IsDigit);
+                containsLetter = userInput.Any(Char.IsLetter);
+                if (!result || !containsDigit || !containsLetter)
                 {
                     Console.WriteLine("Incorrect Input!");
                 }
-
             }
-            while (!result);
+            while (!result || !containsDigit || !containsLetter);
 
             return userInput;
         }
@@ -346,9 +347,16 @@
                 sw.WriteLine("username:role:change:currentValue:newValue");
                 sw.Close();
             }
+        }
+        public static void MonthlyPayOut()
+        {
+            var users = GetUsers();
 
-
-
+            foreach (var user in users)
+            {
+                user.balance += user.salary;
+            }
+            OverwritelistOfUser(users);
         }
     }
 }
