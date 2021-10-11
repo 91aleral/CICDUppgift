@@ -1,59 +1,58 @@
-﻿using CICDUppgift.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-
-namespace CICDUppgift.Controller
+﻿namespace CICDUppgift.Controller
 {
-    public static class UserHandler
+    using CICDUppgift.Model;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.IO;
+    using System.Threading;
+    using CICDUppgift.View;
+
+    public class UserHandler
     {
-       public static string userPath = "..//..//..//..//CICDUppgift//Users.txt";
+        public static string userPath = "..//..//..//..//CICDUppgift//Users.txt";
+        public static string RemovedUserPath = "..//..//..//..//CICDUppgift//RemovedUsers.txt";
 
 
-        public static int LoginUser(string username, string password)
+        public static User LoginUser(string username, string password)
         {
-
             List<User> Users = GetUsers();
 
             foreach (var user in Users)
-            {             
+            {
 
                 if (user.userName == username && user.password == password)
-                {                    
-                    Console.WriteLine("Success!");
-                    
-                    return user.ID;
+                {
+
+                    return user;
                 }
             }
-            Console.WriteLine("Fail");
-            return 0;
+            return null;
         }
 
 
-        public static User Login()
-        {
-            int userID;
-            do
-            {
-                Console.WriteLine("Enter username:");
-                var username = Console.ReadLine();
-                Console.WriteLine("Enter password:");
-                var password = Console.ReadLine();
 
-                userID = LoginUser(username, password);
-            } while (userID == 0);
 
-            return GetUser(userID);
-
-        }
 
         public static List<User> GetUsers()
         {
-            List < User > userUsers = new List<User>();
-            List<string> Users = File.ReadAllLines(userPath).ToList();
+            List<string> Users = new List<string>();
+
+            using (var stream = new FileStream(userPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        Users.Add(line);
+                    }
+                }
+            }
+
+            List<User> userUsers = new List<User>();
             foreach (var item in Users)
             {
                 string[] user = item.Split(':');
@@ -71,38 +70,127 @@ namespace CICDUppgift.Controller
 
                 userUsers.Add(currentUser);
             }
-
             return userUsers;
         }
+
         public static User GetUser(int ID)
         {
             List<User> users = GetUsers();
 
             foreach (var user in users)
             {
-                if(user.ID == ID)
+                if (user.ID == ID)
                 {
                     return user;
                 }
             }
             return null;
+        }
+
+        // Fungerar inte. Skriver över ALLT i txt filen..
+        public static void DeleteUser(string username, string password)
+        {
+            // Hämtar users
+            List<User> users = GetUsers();
+
+            users.RemoveAll(u => u.userName == username && u.password == password);
+            OverwritelistOfUser(users);
+
+
+
 
         }
 
-        public static void AddNewUser(string userName, string password, string role, int salary, int balance) { 
-          
-            string user = newID() + ":" + userName + ":" + password + ":" + role + ":" + salary + ":" + balance;
-            StreamWriter sw = new StreamWriter("../../../Users.txt", true);
-            sw.WriteLine(user);
-            sw.Close();
+        public static void AddNewUser(string userName, string password, string role, int salary, int balance, string accountType)
+        {
+
+            string user = newID() + ":" + userName + ":" + password + ":" + role + ":" + salary + ":" + balance + ":" + accountType;
+            
+            using (StreamWriter sw = new StreamWriter(userPath, true))
+            {
+                sw.WriteLine(user);
+                //sw.Close();
+            }
         }
 
-        public static int newID() {
+        /// <summary>
+        /// Skriver användare till txt
+        /// </summary>
+        /// <param name="users"></param>
+        public static void listOfUser(List<User> users)
+        {
 
-            List<string> Users = File.ReadAllLines(userPath).ToList();     
-            var lastID = Users.Last().Substring(0, 1);
-            int ID = Convert.ToInt32(lastID);
-            return ID + 1;           
+
+            foreach (var item in users)
+            {
+                using (StreamWriter sw = new StreamWriter(userPath, true))
+                {
+                    string user = newID() + ":" + item.userName + ":" + item.password + ":" + item.role + ":" + item.salary + ":" + item.balance + ":" + item.accountType;
+
+                    sw.WriteLine(user);
+                    sw.Close();
+                };
+
+            }
+
+        }
+
+        public static void OverwritelistOfUser(List<User> users)
+        {
+            newTxtList();
+            users.RemoveAt(0);
+            foreach (var item in users)
+            {
+                using (StreamWriter sw = new StreamWriter(userPath, true))
+                {
+                    string user = newID() + ":" + item.userName + ":" + item.password + ":" + item.role + ":" + item.salary + ":" + item.balance + ":" + item.accountType;
+
+                    sw.WriteLine(user);
+                    sw.Close();
+                };
+
+            }
+
+        }
+
+        public static void newTxtList()
+        {
+
+            using (StreamWriter sw = new StreamWriter(userPath, false))
+            {
+                string user = 1 + ":" + "Admin" + ":" + "admin123" + ":" + "User" + ":" + 0 + ":" + 0 + ":" + "Admin";
+                sw.WriteLine(user);
+                sw.Close();
+            }
+
+
+
+        }
+
+        public static int newID()
+        {
+            // List<string> Users = Users = File.ReadAllLines(userPath).ToList();
+
+            List<string> Users = new List<string>();
+            using (var stream = new FileStream(userPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        Users.Add(line);
+                    }
+                }
+            }
+
+
+
+
+            var lastID = Users.Last().Split(':');
+            int ID = Convert.ToInt32(lastID[0]);
+
+            return ID + 1;
 
         }
 
@@ -113,8 +201,8 @@ namespace CICDUppgift.Controller
             bool parsed = false;
             do
             {
-               parsed = Int32.TryParse(Console.ReadLine(), out userInput);
-               
+                parsed = Int32.TryParse(Console.ReadLine(), out userInput);
+
                 if (!parsed)
                 {
                     Console.WriteLine("Incorrect input");
@@ -133,8 +221,8 @@ namespace CICDUppgift.Controller
             bool result = false;
             do
             {
-             userInput = Console.ReadLine();
-             result = userInput.All(Char.IsLetter);
+                userInput = Console.ReadLine();
+                result = userInput.All(Char.IsLetter);
                 if (!result)
                 {
                     Console.WriteLine("Incorrect Input!");

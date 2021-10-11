@@ -13,12 +13,70 @@ namespace CICDUppgift.Controller.Tests
     public class UserHandlerTests
     {
         [TestMethod()]
-        public void CheckForUserTest()
+        public void AccessTxtTest()
         {
-            StreamReader sr = new StreamReader("..//..//..//..//CICDUppgift//Users.txt");
-            var line = sr.ReadLine();
-            var expected = line.Contains("Alex");
+            string line;
+
+            using (StreamReader sr = new StreamReader("..//..//..//..//CICDUppgift//Users.txt"))
+            {
+                line = sr.ReadLine();
+            }
+            var expected = line.Contains("Admin");
             var actual = true;
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void LoginUserTest_1()
+        {
+            var actual = UserHandler.LoginUser("Admin", "admin123").ID;
+            var expected = 1;
+            Assert.AreEqual(expected, actual);
+        }
+
+
+
+        [TestMethod()]
+        public void GetUsersTest_1()
+        {
+            List<string> Users = new List<string>();
+
+            using (var stream = new FileStream(UserHandler.userPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        Users.Add(line);
+                    }
+                }
+            }
+
+
+            var expected = Users.Count();
+            var actual = UserHandler.GetUsers().Count;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void GetUsersTest_2()
+        {
+            var actual = UserHandler.GetUsers()[0].userName;
+
+            Assert.AreEqual("Admin", actual);
+        }
+
+        [TestMethod()]
+        public void AddNewUserAndDeleteTest_1()
+        {
+            UserHandler.AddNewUser("test", "test123", "Test", 15, 250, "User");
+            var list = UserHandler.GetUsers();
+            var expected = list.Last().userName;
+            var actual = "test";
+
+            UserHandler.DeleteUser("test", "test123");
             Assert.AreEqual(expected, actual);
         }
     }
