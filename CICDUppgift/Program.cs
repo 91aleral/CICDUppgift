@@ -1,18 +1,12 @@
-﻿using CICDUppgift.Model;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using CICDUppgift.Controller;
-using System.Threading;
-using CICDUppgift.View;
-
-namespace CICDUppgift
+﻿namespace CICDUppgift
 {
+    using CICDUppgift.View;
+
     class Program
     {
         static void Main(string[] args)
         {
+            /// Start av program
             Menu.Login();
         }
     }

@@ -8,6 +8,11 @@
 
     public class Menu : UserHandler
     {
+        /// <summary>
+        /// Huvudmenyn för antingen en User eller en Admin, med dess olika val att göra.
+        /// En check görs om det är en Admin eller en User
+        /// </summary>
+        /// <param name="user">Användare</param>
         public static void MainMenu(User user)
         {
             Console.Clear();
@@ -31,7 +36,6 @@
                     default:
                         MainMenu(user);
                         break;
-
                 }
             }
 
@@ -71,6 +75,11 @@
             }
         }
 
+        /// <summary>
+        /// En meny för användaren för att begära en förändring på sitt konto.
+        /// Ex: Ändra sin Roll eller Lön.
+        /// </summary>
+        /// <param name="user">Användare</param>
         public static void RequestChange(User user)
         {
             Console.Clear();
@@ -114,9 +123,6 @@
                     Thread.Sleep(1500);
                     MainMenu(user);
                 }
-
-
-
             }
             else if (request == "salary" || request == "Salary")
             {
@@ -146,7 +152,10 @@
             }
         }
 
-
+        /// <summary>
+        /// Login meny - Det användare anger skickas vidare till LoginUser metoden
+        /// som sedan kollar om användare finns eller ej och hämtar dess data.
+        /// </summary>
         public static void Login()
         {
             User user;
@@ -172,9 +181,15 @@
             Console.WriteLine("Redirecting to menu...");
             Thread.Sleep(2500);
             MainMenu(user);
-
         }
 
+        /// <summary>
+        /// Meny för att lägga till en ny användare.
+        /// Gör checkar om användare finns.
+        /// 
+        /// Admin skapar användaren och skriver in dess info som tillhör användaren.
+        /// </summary>
+        /// <param name="user">Användare</param>
         public static void AddUser(User user)
         {
             Console.Clear();
@@ -226,6 +241,11 @@
             }
         }
 
+        /// <summary>
+        /// Meny - hämtar alla användare till Admin.
+        /// Man ser: Username, Role och password.
+        /// </summary>
+        /// <param name="user">Användare</param>
         public static void GetAllUsers(User user)
         {
             Console.Clear();
@@ -243,20 +263,19 @@
             MainMenu(user);
         }
 
+        /// <summary>
+        /// Meny för användare - raddera sitt egna konto ifrån systemet.
+        /// </summary>
+        /// <param name="user">Användare</param>
         public static void DeleteCurrentUser(User user)
         {
-            // Hämtar users
             List<User> users = GetAllUsersToList();
             Console.Clear();
             Console.WriteLine("Remove current user... \n\n");
-            // User input
+
             Console.WriteLine("Enter your username: ");
             var username = Console.ReadLine();
 
-
-            // Mer funktionalitet - Are you sure you want to delete me?
-
-            // User input
             Console.WriteLine("Enter your password: ");
             var password = Console.ReadLine();
             if (username == user.userName && password == user.password)
@@ -288,10 +307,14 @@
             }
         }
 
+        /// <summary>
+        /// Meny för admin - raddera ett konto/användare ifrån systemet.
+        /// </summary>
+        /// <param name="user"></param>
         public static void AdminDeleteUser(User user)
         {
             Console.Clear();
-            // Hämtar users
+            
             List<User> users = GetAllUsersToList();
             Console.WriteLine("Users: \n\n");
             foreach (var item in users)
@@ -331,6 +354,12 @@
             }
         }
 
+        /// <summary>
+        /// Meny för admin - Visar information om en användare har begärt ändring på sitt konto.
+        /// Ex: Roll eller Lön.
+        /// Admin kan sedan godkänna eller neka förändringen och datan uppdateras.
+        /// </summary>
+        /// <param name="user">Användare</param>
         public static void ShowUserRequests(User user)
         {
             var requests = GetAdminLog();
@@ -344,13 +373,14 @@
 
             Console.WriteLine("Current requests: \n");
 
-
             for (int i = 1; i < requests.Count; i++)
             {
                 Console.WriteLine($"{i}. User {requests[i].userName}, {requests[i].role} requesting updated {requests[i].change} from {requests[i].currentValue} to {requests[i].newValue}");
             }
+
             Console.WriteLine("\nPress 1 to implement a request or 2 to remove a request:");
             var performance = Console.ReadLine();
+
             if (performance == "2")
             {
                 Console.WriteLine("Enter the number to remove: ");
@@ -377,6 +407,7 @@
                     Thread.Sleep(2500);
                     MainMenu(user);
                 }
+
                 ExecuteChangeRequest(requests[indexToChange]);
                 requests.RemoveAt(indexToChange);
                 OverwriteSavedChangeRequests(requests);
@@ -390,6 +421,10 @@
             }
         }
 
+        /// <summary>
+        /// Meny för admin - Valmöjlighet om admin vill betala ut månadslön eller inte till alla användare.
+        /// </summary>
+        /// <param name="user">Användare</param>
         public static void PayOutRequest(User user)
         {
             Console.Clear();
