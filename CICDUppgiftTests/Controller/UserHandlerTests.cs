@@ -37,7 +37,7 @@ namespace CICDUppgift.Controller.Tests
         [TestMethod()]
         public void NewUserExists()
         {
-            var actual = UserHandler.CheckUsername("admin1");
+            var actual = UserHandler.CheckIfUsernameExists("admin1");
             var expected = true;
             Assert.AreEqual(expected, actual);
         }
@@ -63,7 +63,7 @@ namespace CICDUppgift.Controller.Tests
 
 
             var expected = Users.Count();
-            var actual = UserHandler.GetUsers().Count;
+            var actual = UserHandler.GetAllUsersToList().Count;
 
             Assert.AreEqual(expected, actual);
         }
@@ -71,7 +71,7 @@ namespace CICDUppgift.Controller.Tests
         [TestMethod()]
         public void GetUsersTest_2()
         {
-            var actual = UserHandler.GetUsers()[0].userName;
+            var actual = UserHandler.GetAllUsersToList()[0].userName;
 
             Assert.AreEqual("admin1", actual);
         }
@@ -80,7 +80,7 @@ namespace CICDUppgift.Controller.Tests
         public void AddNewUserAndDeleteTest_1()
         {
             UserHandler.AddNewUser("test", "test123", "Test", 15, "User");
-            var list = UserHandler.GetUsers();
+            var list = UserHandler.GetAllUsersToList();
             var expected = list.Last().userName;
             var actual = "test";
             UserHandler.DeleteUser("test", "test123");
@@ -95,7 +95,7 @@ namespace CICDUppgift.Controller.Tests
             UserHandler.AddNewUser("test", "test123", "Test", 15, "User");
             var expeted = UserHandler.LoginUser("test", "test123").ID;
             UserHandler.DeleteUser("test", "test123");
-            var list = UserHandler.GetUsers();
+            var list = UserHandler.GetAllUsersToList();
             var actual = list.Last().ID;
             Assert.AreNotEqual(expeted, actual);
         }
@@ -104,11 +104,40 @@ namespace CICDUppgift.Controller.Tests
         public void CreateLoginRemoveUserIntegrationTest2()
         {
             UserHandler.AddNewUser("test93", "test123", "Test", 15, "User");
-            var list = UserHandler.GetUsers();
+            var list = UserHandler.GetAllUsersToList();
             var expeted = UserHandler.LoginUser("test93", "test123").ID;            
             var actual = list.Last().ID;
             Assert.AreEqual(expeted, actual);
             UserHandler.DeleteUser("test93", "test123");
+        }
+
+        [TestMethod()]
+        public void PayoutSalariesTest()
+        {
+            int balancesBefore = 0;
+            int salariesCombined = 0;
+            var userList = UserHandler.GetAllUsersToList();
+
+            foreach (var user in userList)
+            {
+                balancesBefore += user.balance;
+                salariesCombined += user.salary;
+            }
+
+            int totalbalance = balancesBefore + salariesCombined;
+
+            UserHandler.PayOutAllSalaries();
+
+            var userListAfterPayout = UserHandler.GetAllUsersToList();
+
+            int balancesAfterPayout = 0;
+            foreach (var user in userListAfterPayout)
+            {
+                balancesAfterPayout += user.balance;
+            }
+
+            Assert.AreEqual(totalbalance, balancesAfterPayout);
+
         }
     }
 }

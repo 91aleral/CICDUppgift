@@ -14,11 +14,6 @@ namespace CICDUppgift
         static void Main(string[] args)
         {
             Menu.Login();
-
-
-
-
-
         }
     }
 }

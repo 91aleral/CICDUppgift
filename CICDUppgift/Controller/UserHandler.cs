@@ -17,7 +17,7 @@
 
         public static User LoginUser(string username, string password)
         {
-            List<User> Users = GetUsers();
+            List<User> Users = GetAllUsersToList();
 
             foreach (var user in Users)
             {
@@ -32,7 +32,7 @@
         }
 
 
-        public static void ChangeRequest(string userName, string userRole, string typeOfChange, string currentValue, string newValue)
+        public static void SaveChangeRequest(string userName, string userRole, string typeOfChange, string currentValue, string newValue)
         {
             string request = userName + ":" + userRole + ":" + typeOfChange + ":" + currentValue + ":" + newValue;
 
@@ -43,7 +43,7 @@
         }
 
 
-        public static List<User> GetUsers()
+        public static List<User> GetAllUsersToList()
         {
             List<string> Users = new List<string>();
 
@@ -80,23 +80,23 @@
             return userUsers;
         }
 
-        public static User GetUser(int ID)
-        {
-            List<User> users = GetUsers();
+        //public static User GetUser(int ID)
+        //{
+        //    List<User> users = GetAllUsersToList();
 
-            foreach (var user in users)
-            {
-                if (user.ID == ID)
-                {
-                    return user;
-                }
-            }
-            return null;
-        }
+        //    foreach (var user in users)
+        //    {
+        //        if (user.ID == ID)
+        //        {
+        //            return user;
+        //        }
+        //    }
+        //    return null;
+        //}
 
-        public static bool CheckUsername(string username)
+        public static bool CheckIfUsernameExists(string username)
         {
-            List<User> users = GetUsers();
+            List<User> users = GetAllUsersToList();
 
             foreach (var user in users)
             {
@@ -111,10 +111,10 @@
         public static void DeleteUser(string username, string password)
         {
             // Hämtar users
-            List<User> users = GetUsers();
+            List<User> users = GetAllUsersToList();
 
             users.RemoveAll(u => u.userName == username && u.password == password);
-            OverwritelistOfUser(users);
+            OverwriteSavedUsers(users);
 
 
 
@@ -124,7 +124,7 @@
         public static void AddNewUser(string userName, string password, string role, int salary, string accountType)
         {
 
-            string user = newID() + ":" + userName + ":" + password + ":" + role + ":" + salary + ":" + 0 + ":" + accountType;
+            string user = GetNewUserID() + ":" + userName + ":" + password + ":" + role + ":" + salary + ":" + 0 + ":" + accountType;
             
             using (StreamWriter sw = new StreamWriter(userPath, true))
             {
@@ -137,33 +137,33 @@
         /// Skriver användare till txt
         /// </summary>
         /// <param name="users"></param>
-        public static void listOfUser(List<User> users)
+        //public static void listOfUser(List<User> users)
+        //{
+
+
+        //    foreach (var item in users)
+        //    {
+        //        using (StreamWriter sw = new StreamWriter(userPath, true))
+        //        {
+        //            string user = newID() + ":" + item.userName + ":" + item.password + ":" + item.role + ":" + item.salary + ":" + item.balance + ":" + item.accountType;
+
+        //            sw.WriteLine(user);
+        //            sw.Close();
+        //        };
+
+        //    }
+
+        //}
+
+        public static void OverwriteSavedUsers(List<User> users)
         {
-
-
-            foreach (var item in users)
-            {
-                using (StreamWriter sw = new StreamWriter(userPath, true))
-                {
-                    string user = newID() + ":" + item.userName + ":" + item.password + ":" + item.role + ":" + item.salary + ":" + item.balance + ":" + item.accountType;
-
-                    sw.WriteLine(user);
-                    sw.Close();
-                };
-
-            }
-
-        }
-
-        public static void OverwritelistOfUser(List<User> users)
-        {
-            newTxtList();
+            NewUserTxt();
             users.RemoveAt(0);
             foreach (var item in users)
             {
                 using (StreamWriter sw = new StreamWriter(userPath, true))
                 {
-                    string user = newID() + ":" + item.userName + ":" + item.password + ":" + item.role + ":" + item.salary + ":" + item.balance + ":" + item.accountType;
+                    string user = GetNewUserID() + ":" + item.userName + ":" + item.password + ":" + item.role + ":" + item.salary + ":" + item.balance + ":" + item.accountType;
 
                     sw.WriteLine(user);
                     sw.Close();
@@ -173,7 +173,7 @@
 
         }
 
-        public static void newTxtList()
+        public static void NewUserTxt()
         {
 
             using (StreamWriter sw = new StreamWriter(userPath, false))
@@ -187,7 +187,7 @@
 
         }
 
-        public static int newID()
+        public static int GetNewUserID()
         {
             // List<string> Users = Users = File.ReadAllLines(userPath).ToList();
 
@@ -214,7 +214,7 @@
 
         }
 
-        public static int getDigitInput()
+        public static int GetDigitInput()
         {
 
             int userInput;
@@ -235,7 +235,7 @@
 
         }
 
-        public static string getLetterInput()
+        public static string GetLetterInput()
         {
             string userInput;
             bool result = false;
@@ -254,7 +254,7 @@
             return userInput;
         }
 
-        public static string getNumberAndLetterInput()
+        public static string GetNumberAndLetterInput()
         {
             string userInput;
             bool result = false;
@@ -312,9 +312,9 @@
 
         }
 
-        public static void executeRequest(UserRequest request)
+        public static void ExecuteChangeRequest(UserRequest request)
         {
-            var users = GetUsers();
+            var users = GetAllUsersToList();
 
 
             foreach (var user in users.Where(u => u.userName == request.userName))
@@ -329,13 +329,13 @@
                 }
             }
 
-            OverwritelistOfUser(users);
+            OverwriteSavedUsers(users);
 
         }
 
-        public static void OverwriteRequests(List<UserRequest> requests)
+        public static void OverwriteSavedChangeRequests(List<UserRequest> requests)
         {
-            newTxtAdmin();
+            NewAdminlogTxt();
             requests.RemoveAt(0);
             foreach (var item in requests)
             {
@@ -352,7 +352,7 @@
 
         }
 
-        public static void newTxtAdmin()
+        public static void NewAdminlogTxt()
         {
 
             using (StreamWriter sw = new StreamWriter(AdminLog, false))
@@ -362,15 +362,19 @@
                 sw.Close();
             }
         }
-        public static void MonthlyPayOut()
+        public static int PayOutAllSalaries()
         {
-            var users = GetUsers();
+            var users = GetAllUsersToList();
+
+            var totalPay = 0;
 
             foreach (var user in users)
             {
                 user.balance += user.salary;
+                totalPay += user.salary;
             }
-            OverwritelistOfUser(users);
+            OverwriteSavedUsers(users);
+            return totalPay;
         }
     }
 }

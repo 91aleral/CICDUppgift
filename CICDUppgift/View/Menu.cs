@@ -52,7 +52,7 @@
                         GetAllUsers(user);
                         break;
                     case "2":
-                        showUserRequests(user);
+                        ShowUserRequests(user);
                         break;
                     case "3":
                         PayOutRequest(user);
@@ -73,6 +73,7 @@
 
         public static void RequestChange(User user)
         {
+            Console.Clear();
             string request;
             bool success;
             do
@@ -92,14 +93,15 @@
             if (request == "role" || request == "Role")
             {
                 Console.WriteLine("Enter a new role: ");
-                var RequestedRole = getLetterInput();
+                var RequestedRole = GetLetterInput();
                 Console.WriteLine("Are you sure you want to request to change from {0} to {1}?", user.role, RequestedRole);
                 Console.WriteLine("Y/N");
                 var input = Console.ReadLine();
 
                 if (input == "Y" || input == "y")
                 {
-                    ChangeRequest(user.userName, user.role, request, user.role, RequestedRole);
+                    SaveChangeRequest(user.userName, user.role, request, user.role, RequestedRole);
+                    Console.Clear();
                     Console.WriteLine($"Request added {RequestedRole} from {user.role}\n\n");
                     Console.WriteLine("Returning to menu...");
                     Thread.Sleep(1500);
@@ -107,7 +109,8 @@
                 }
                 else
                 {
-                    Console.WriteLine("Cancelling, getting redirected to menu...");
+                    Console.Clear();
+                    Console.WriteLine("Cancelling, Redirecting to menu...");
                     Thread.Sleep(1500);
                     MainMenu(user);
                 }
@@ -118,7 +121,7 @@
             else if (request == "salary" || request == "Salary")
             {
                 Console.WriteLine("Enter a new salary: ");
-                var RequestedSalary = getDigitInput();
+                var RequestedSalary = GetDigitInput();
 
                 Console.WriteLine("Are you sure you want to request to change from {0} to {1}?", user.salary, RequestedSalary);
                 Console.WriteLine("Y/N");
@@ -126,7 +129,8 @@
 
                 if (input == "Y" || input == "y")
                 {
-                    ChangeRequest(user.userName, user.role, request, user.salary.ToString(), RequestedSalary.ToString()); ;
+                    Console.Clear();
+                    SaveChangeRequest(user.userName, user.role, request, user.salary.ToString(), RequestedSalary.ToString()); ;
                     Console.WriteLine($"Request added {RequestedSalary} from {user.salary}\n\n");
                     Console.WriteLine("Returning to menu...");
                     Thread.Sleep(1500);
@@ -134,8 +138,9 @@
                 }
                 else
                 {
-                    Console.WriteLine("Cancelling, getting redirected to menu...");
-                    Thread.Sleep(1500);
+                    Console.Clear();
+                    Console.WriteLine("Cancelling, Redirecting to menu...");
+                    Thread.Sleep(2500);
                     MainMenu(user);
                 }
             }
@@ -147,14 +152,22 @@
             User user;
             do
             {
+                Console.Clear();
                 Console.WriteLine("Enter username:");
                 var username = Console.ReadLine();
                 Console.WriteLine("Enter password:");
-                var password = Console.ReadLine();
+                var password = Console.ReadLine();               
 
                 user = LoginUser(username, password);
+
+                if (user == null)
+                {
+                    Console.WriteLine("Incorrect username or password!");
+                    Thread.Sleep(2000);
+                }
             } while (user == null);
 
+            Console.Clear();
             Console.WriteLine($"Logging in as {user.role} {user.userName}\n\n");
             Console.WriteLine("Redirecting to menu...");
             Thread.Sleep(2500);
@@ -164,6 +177,7 @@
 
         public static void AddUser(User user)
         {
+            Console.Clear();
             Console.WriteLine("Logged in as {0}, role: {1}\n\n", user.userName, user.role);
             Console.WriteLine("Add new user:   (username, password, role, salary, balance, accountType");
             bool userExists;
@@ -171,8 +185,8 @@
             do
             {
             Console.WriteLine("Enter a username:");
-            username = getNumberAndLetterInput();
-            userExists = CheckUsername(username);
+            username = GetNumberAndLetterInput();
+            userExists = CheckIfUsernameExists(username);
                 if (userExists)
                 {
                     Console.WriteLine("Username already in use!");
@@ -181,13 +195,13 @@
             } while (userExists);
            
             Console.WriteLine("Enter a password:");
-            var password = getNumberAndLetterInput();
+            var password = GetNumberAndLetterInput();
             Console.WriteLine("Enter a role:");
-            var role = getLetterInput();
+            var role = GetLetterInput();
             Console.WriteLine("Enter a salary:");
-            int salary = getDigitInput(); ;
+            int salary = GetDigitInput(); ;
             Console.WriteLine("Enter a account type (User/Admin):");
-            var accountType = getLetterInput();
+            var accountType = GetLetterInput();
 
             if (accountType != "User" && accountType != "Admin")
             {
@@ -216,11 +230,12 @@
         {
             Console.Clear();
             Console.WriteLine("Logged in as {0}, role: {1}\n\n", user.userName, user.role);
-            var userList = GetUsers();
+            var userList = GetAllUsersToList();
 
             foreach (var item in userList)
             {
-                Console.WriteLine("Username: {0}, password: {1}", item.userName, item.password);
+                Console.WriteLine("Username: {0}\nRole: {1}\nPassword: {2}", item.userName,item.role, item.password);
+                Console.WriteLine("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
             }
 
             Console.WriteLine("\n\n Press any key to return to menu");
@@ -231,7 +246,8 @@
         public static void DeleteCurrentUser(User user)
         {
             // Hämtar users
-            List<User> users = GetUsers();
+            List<User> users = GetAllUsersToList();
+            Console.Clear();
             Console.WriteLine("Remove current user... \n\n");
             // User input
             Console.WriteLine("Enter your username: ");
@@ -245,21 +261,29 @@
             var password = Console.ReadLine();
             if (username == user.userName && password == user.password)
             {
+                Console.Clear();
                 Console.WriteLine($"Are you sure you want to remove your user {user.userName}?  Y/N");
                 var input = Console.ReadLine();
                 if (input == "Y" || input == "y")
                 {
+                    Console.Clear();
+                    Console.WriteLine($"Removing user {user.userName}, you will now be logged out. ");
+                    Thread.Sleep(3000);
                     DeleteUser(username, password);
                     Login();
                 }
                 else
                 {
+                    Console.WriteLine("Cancelling, Redirecting to menu..");
+                    Thread.Sleep(3000);
                     MainMenu(user);
                 }
             }
             else
             {
-                Console.WriteLine("Incorrect username or password");
+                Console.WriteLine("Incorrect username or password!");
+                Console.WriteLine("Redirecting to menu..");
+                Thread.Sleep(2500);
                 MainMenu(user);
             }
         }
@@ -268,7 +292,7 @@
         {
             Console.Clear();
             // Hämtar users
-            List<User> users = GetUsers();
+            List<User> users = GetAllUsersToList();
             Console.WriteLine("Users: \n\n");
             foreach (var item in users)
             {
@@ -301,19 +325,19 @@
             else
             {
                 Console.WriteLine("Something went wrong.");
-                Console.WriteLine("Press any key to continue..");
-                Console.Read();
+                Console.WriteLine("Returning to menu..");
+                Thread.Sleep(2500);
                 MainMenu(user);
             }
         }
 
-        public static void showUserRequests(User user)
+        public static void ShowUserRequests(User user)
         {
             var requests = GetAdminLog();
             Console.Clear();
             if (requests.Count <= 1)
             {
-                Console.WriteLine("No requests to show! Returning to menu...");
+                Console.WriteLine("No requests to show! Redirecting to menu...");
                 Thread.Sleep(2000);
                 MainMenu(user);
             }
@@ -323,14 +347,14 @@
 
             for (int i = 1; i < requests.Count; i++)
             {
-                Console.WriteLine($" {i}. User {requests[i].userName}, {requests[i].role} requesting updated {requests[i].change} from {requests[i].currentValue} to {requests[i].newValue}");
+                Console.WriteLine($"{i}. User {requests[i].userName}, {requests[i].role} requesting updated {requests[i].change} from {requests[i].currentValue} to {requests[i].newValue}");
             }
-            Console.WriteLine("Press 1 to perform changes or 2 to remove a change.");
+            Console.WriteLine("\nPress 1 to implement a request or 2 to remove a request:");
             var performance = Console.ReadLine();
             if (performance == "2")
             {
                 Console.WriteLine("Enter the number to remove: ");
-                int numberToRemove = getDigitInput();
+                int numberToRemove = GetDigitInput();
                 if (numberToRemove >= requests.Count || numberToRemove <= 0)
                 {
                     Console.WriteLine("Nothing to match...");
@@ -339,49 +363,59 @@
                 }
 
                 requests.RemoveAt(numberToRemove);
-                OverwriteRequests(requests);
+                OverwriteSavedChangeRequests(requests);
                 MainMenu(user);
             }
             else if ( performance == "1")
             {
                 Console.WriteLine("\n Enter the number of a request to execute it (e.g 3)!");
-                int indexToChange = getDigitInput();
+                int indexToChange = GetDigitInput();
 
                 if (indexToChange >= requests.Count)
                 {
-                    Console.WriteLine("Incorrect choice! Returning to menu");
-                    Thread.Sleep(2000);
+                    Console.WriteLine("Incorrect choice! Redirecting to menu");
+                    Thread.Sleep(2500);
                     MainMenu(user);
                 }
-                executeRequest(requests[indexToChange]);
+                ExecuteChangeRequest(requests[indexToChange]);
                 requests.RemoveAt(indexToChange);
-                OverwriteRequests(requests);
+                OverwriteSavedChangeRequests(requests);
                 MainMenu(user);
             }
             else
             {
-                Console.WriteLine("Incorrect choice! Returning to menu");
-                Thread.Sleep(2000);
+                Console.WriteLine("Incorrect choice! Redirecting to menu");
+                Thread.Sleep(2500);
                 MainMenu(user);
             }
         }
 
         public static void PayOutRequest(User user)
         {
+            Console.Clear();
             Console.WriteLine("Would you like to pay all users? Y/N");
             var input = Console.ReadLine();
 
             if (input == "Y" || input == "y")
             {
-                MonthlyPayOut();
-                Console.WriteLine("Payout has been done!");
-                Thread.Sleep(2000);
+                var money = PayOutAllSalaries();
+                Console.Clear();
+                Console.WriteLine($"A total of {money}$ payout has been done!");
+                Console.WriteLine("\nRedirecting to menu...");
+                Thread.Sleep(3500);
+
+                MainMenu(user);
+            }
+            else if(input == "N" || input == "n")
+            {
+                Console.WriteLine("Redirecting to menu...");
+                Thread.Sleep(2500);
                 MainMenu(user);
             }
             else
             {
-                Console.WriteLine("Incorrect choice! Returning to menu...");
-                Thread.Sleep(2000);
+                Console.WriteLine("Incorrect choice! Redirecting to menu...");
+                Thread.Sleep(2500);
                 MainMenu(user);
             }
         }
