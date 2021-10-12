@@ -94,6 +94,20 @@
             return null;
         }
 
+        public static bool CheckUsername(string username)
+        {
+            List<User> users = GetUsers();
+
+            foreach (var user in users)
+            {
+                if (user.userName.ToLower() == username.ToLower())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static void DeleteUser(string username, string password)
         {
             // Hämtar users
@@ -107,10 +121,10 @@
 
         }
 
-        public static void AddNewUser(string userName, string password, string role, int salary, int balance, string accountType)
+        public static void AddNewUser(string userName, string password, string role, int salary, string accountType)
         {
 
-            string user = newID() + ":" + userName + ":" + password + ":" + role + ":" + salary + ":" + balance + ":" + accountType;
+            string user = newID() + ":" + userName + ":" + password + ":" + role + ":" + salary + ":" + 0 + ":" + accountType;
             
             using (StreamWriter sw = new StreamWriter(userPath, true))
             {

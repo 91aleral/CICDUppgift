@@ -34,6 +34,14 @@ namespace CICDUppgift.Controller.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        [TestMethod()]
+        public void NewUserExists()
+        {
+            var actual = UserHandler.CheckUsername("admin1");
+            var expected = true;
+            Assert.AreEqual(expected, actual);
+        }
+
 
 
         [TestMethod()]
@@ -71,13 +79,36 @@ namespace CICDUppgift.Controller.Tests
         [TestMethod()]
         public void AddNewUserAndDeleteTest_1()
         {
-            UserHandler.AddNewUser("test", "test123", "Test", 15, 250, "User");
+            UserHandler.AddNewUser("test", "test123", "Test", 15, "User");
             var list = UserHandler.GetUsers();
             var expected = list.Last().userName;
             var actual = "test";
-
             UserHandler.DeleteUser("test", "test123");
             Assert.AreEqual(expected, actual);
+        }
+
+
+
+        [TestMethod()]
+        public void CreateLoginRemoveUserIntegrationTest()
+        {
+            UserHandler.AddNewUser("test", "test123", "Test", 15, "User");
+            var expeted = UserHandler.LoginUser("test", "test123").ID;
+            UserHandler.DeleteUser("test", "test123");
+            var list = UserHandler.GetUsers();
+            var actual = list.Last().ID;
+            Assert.AreNotEqual(expeted, actual);
+        }
+
+        [TestMethod()]
+        public void CreateLoginRemoveUserIntegrationTest2()
+        {
+            UserHandler.AddNewUser("test93", "test123", "Test", 15, "User");
+            var list = UserHandler.GetUsers();
+            var expeted = UserHandler.LoginUser("test93", "test123").ID;            
+            var actual = list.Last().ID;
+            Assert.AreEqual(expeted, actual);
+            UserHandler.DeleteUser("test93", "test123");
         }
     }
 }

@@ -92,7 +92,7 @@
             if (request == "role" || request == "Role")
             {
                 Console.WriteLine("Enter a new role: ");
-                var RequestedRole = Console.ReadLine();
+                var RequestedRole = getLetterInput();
                 Console.WriteLine("Are you sure you want to request to change from {0} to {1}?", user.role, RequestedRole);
                 Console.WriteLine("Y/N");
                 var input = Console.ReadLine();
@@ -118,7 +118,7 @@
             else if (request == "salary" || request == "Salary")
             {
                 Console.WriteLine("Enter a new salary: ");
-                var RequestedSalary = Console.ReadLine();
+                var RequestedSalary = getDigitInput();
 
                 Console.WriteLine("Are you sure you want to request to change from {0} to {1}?", user.salary, RequestedSalary);
                 Console.WriteLine("Y/N");
@@ -126,7 +126,7 @@
 
                 if (input == "Y" || input == "y")
                 {
-                    ChangeRequest(user.userName, user.role, request, user.salary.ToString(), RequestedSalary);
+                    ChangeRequest(user.userName, user.role, request, user.salary.ToString(), RequestedSalary.ToString()); ;
                     Console.WriteLine($"Request added {RequestedSalary} from {user.salary}\n\n");
                     Console.WriteLine("Returning to menu...");
                     Thread.Sleep(1500);
@@ -166,8 +166,20 @@
         {
             Console.WriteLine("Logged in as {0}, role: {1}\n\n", user.userName, user.role);
             Console.WriteLine("Add new user:   (username, password, role, salary, balance, accountType");
+            bool userExists;
+            string username;
+            do
+            {
             Console.WriteLine("Enter a username:");
-            var username = getNumberAndLetterInput();
+            username = getNumberAndLetterInput();
+            userExists = CheckUsername(username);
+                if (userExists)
+                {
+                    Console.WriteLine("Username already in use!");
+                }
+
+            } while (userExists);
+           
             Console.WriteLine("Enter a password:");
             var password = getNumberAndLetterInput();
             Console.WriteLine("Enter a role:");
@@ -184,12 +196,12 @@
                 MainMenu(user);
             }
 
-            Console.WriteLine("\n\nCreate user {0}, password: {1}, role: {2}, salary: {3}, accountType: {5}?", username, password, role, salary, accountType);
+            Console.WriteLine("\n\nCreate user {0}, password: {1}, role: {2}, salary: {3}, accountType: {4}?", username, password, role, salary, accountType);
             Console.WriteLine("Y/N");
             var input = Console.ReadLine();
             if (input == "Y" || input == "y")
             {
-                AddNewUser(username, password, role, salary, 0, accountType);
+                AddNewUser(username, password, role, salary, accountType);
                 MainMenu(user);
             }
             else
